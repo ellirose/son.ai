@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SON.IA · Conversas</title>
+<link rel="icon" href="assets/star-claro.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --font:"Manrope",ui-sans-serif,system-ui,"Segoe UI",sans-serif;
+  --ai:linear-gradient(135deg,#9333EA 0%,#2563EB 58%,#22D3EE 100%);
+  --wa:#22C55E; --ig:#E1306C; --tg:#2AABEE; --outlook:#3B82F6; --gmail:#EA4335;
+}
+html[data-theme="dark"]{
+  --bg:#121217; --rail:#101114; --surface:#171922; --sunk:#14161D; --hover:#1E2130;
+  --line:#262A37; --line-2:#4A5060;
+  --text:#F5F6F8; --text-2:#B4BAC7; --text-3:#7F8799;
+  --accent:#3B82F6; --accent-text:#7AB0FF; --accent-soft:rgba(59,130,246,.15);
+  --amber:#F5B544; --amber-soft:rgba(245,158,11,.12); --amber-line:rgba(245,158,11,.38);
+  --rose:#FB7185; --rose-soft:rgba(244,63,94,.13);
+  --green:#4ADE80; --green-soft:rgba(34,197,94,.12);
+  --ai-bubble:#1B1E2D; --ai-line:rgba(147,51,234,.30);
+  --shadow:0 16px 40px rgba(0,0,0,.45);
+  --scrim:rgba(5,6,10,.55);
+  --av-bg:40% 24%; --av-fg:80% 82%;
+  color-scheme:dark;
+}
+html[data-theme="light"]{
+  --bg:#F4F5F7; --rail:#FFFFFF; --surface:#FFFFFF; --sunk:#F8F9FB; --hover:#F1F3F6;
+  --line:#E5E7EC; --line-2:#D3D8E0;
+  --text:#121217; --text-2:#4A5163; --text-3:#7B8395;
+  --accent:#2F7CF6; --accent-text:#1D4ED8; --accent-soft:rgba(47,124,246,.10);
+  --amber:#B45309; --amber-soft:#FEF5E4; --amber-line:#F3D193;
+  --rose:#BE123C; --rose-soft:#FFE9ED;
+  --green:#15803D; --green-soft:#E7F6ED;
+  --ai-bubble:#F7F4FE; --ai-line:#E2D6FA;
+  --shadow:0 12px 32px rgba(18,18,23,.12);
+  --scrim:rgba(18,18,23,.22);
+  --av-bg:75% 93%; --av-fg:50% 34%;
+  color-scheme:light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+svg.i{flex:none;display:block}
+.only-light{display:none} html[data-theme="light"] .only-light{display:block} html[data-theme="light"] .only-dark{display:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--line-2);border:3px solid transparent;background-clip:padding-box}
+.trunc{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.caps{font-size:10.5px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--text-3)}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:72px minmax(0,1fr);height:100vh}
+.nav{position:relative;z-index:40}
+.nav-inner{position:absolute;inset:0 auto 0 0;width:72px;background:var(--rail);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px 12px 12px;transition:width .22s ease,box-shadow .22s ease;overflow:hidden}
+.app.nav-open .nav-inner{width:276px;box-shadow:var(--shadow)}
+.scrim{position:fixed;inset:0;background:var(--scrim);opacity:0;pointer-events:none;transition:opacity .2s;z-index:35}
+.app.nav-open .scrim{opacity:1;pointer-events:auto}
+.brand{height:40px;display:flex;align-items:center;padding-left:12px;margin-bottom:10px;flex:none}
+.brand .star{height:24px;width:auto}
+.brand .word{height:30px;width:auto}
+.brand img{display:none!important}
+html[data-theme="dark"] .brand .star.only-dark,html[data-theme="light"] .brand .star.only-light{display:block!important}
+html[data-theme="dark"] .app.nav-open .brand .star,html[data-theme="light"] .app.nav-open .brand .star{display:none!important}
+html[data-theme="dark"] .app.nav-open .brand .word.only-dark,html[data-theme="light"] .app.nav-open .brand .word.only-light{display:block!important}
+.nav-scroll{flex:1;overflow-y:auto;overflow-x:hidden;margin:0 -12px;padding:0 12px;scrollbar-width:none}
+.nav-scroll::-webkit-scrollbar{display:none}
+.nav-group{display:flex;flex-direction:column;gap:2px;padding:6px 0}
+.nav-group+.nav-group{border-top:1px solid var(--line)}
+.nav-label{padding:0 13px;height:0;opacity:0;overflow:hidden;white-space:nowrap;transition:opacity .15s,height .2s}
+.app.nav-open .nav-label{height:24px;opacity:1;padding-top:6px}
+.nav-item{display:flex;align-items:center;gap:13px;height:38px;padding:0 13px;border-radius:10px;color:var(--text-2);white-space:nowrap;position:relative;font-weight:600;font-size:13.5px;width:100%;text-align:left}
+.nav-item:hover{background:var(--hover);color:var(--text)}
+.nav-item.active{background:var(--accent-soft);color:var(--accent-text)}
+.nav-item .lbl{opacity:0;transition:opacity .12s}
+.app.nav-open .nav-item .lbl{opacity:1}
+.nav-badge{position:absolute;top:4px;left:27px;min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:var(--accent);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;border:2px solid var(--rail)}
+.nav-badge.warn{background:#F59E0B;color:#1a1204}
+.app.nav-open .nav-badge{position:static;margin-left:auto;border:0}
+.nav-foot{flex:none;border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:4px}
+.me-row{display:flex;align-items:center;gap:12px;padding:6px 7px;border-radius:10px;white-space:nowrap}
+.me-av{width:34px;height:34px;flex:none;border-radius:50%;background:var(--accent-soft);color:var(--accent-text);font-weight:800;font-size:12px;display:grid;place-items:center}
+.me-row .lbl{opacity:0;transition:opacity .12s;display:flex;flex-direction:column;line-height:1.2}
+.app.nav-open .me-row .lbl{opacity:1}
+.me-row small{color:var(--text-3);font-size:11.5px;font-weight:600}
+.tip{position:fixed;z-index:80;pointer-events:none;background:var(--text);color:var(--bg);font-size:12px;font-weight:700;padding:6px 9px;border-radius:7px;opacity:0;transform:translateX(-4px);transition:opacity .12s,transform .12s;white-space:nowrap}
+.tip.show{opacity:1;transform:none}
+
+.main{display:grid;grid-template-rows:56px minmax(0,1fr);min-width:0;min-height:0}
+.topbar{display:flex;align-items:center;gap:14px;padding:0 18px 0 16px;border-bottom:1px solid var(--line)}
+.crumbs{display:flex;align-items:center;gap:8px;color:var(--text-3);font-size:13px;font-weight:600;white-space:nowrap}
+.crumbs b{color:var(--text);font-weight:700}
+.gsearch{flex:1;max-width:440px;margin:0 auto;display:flex;align-items:center;gap:10px;height:36px;padding:0 10px 0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--text-3);font-size:13px}
+.gsearch input{flex:1;border:0;background:transparent;outline:none;color:var(--text);min-width:0}
+.gsearch input::placeholder{color:var(--text-3)}
+kbd{font-family:var(--font);font-size:11px;font-weight:700;color:var(--text-3);border:1px solid var(--line);border-radius:6px;padding:1px 6px;background:var(--sunk)}
+.top-actions{display:flex;align-items:center;gap:4px}
+.icon-btn{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--text-2);position:relative;flex:none}
+.icon-btn:hover{background:var(--hover);color:var(--text)}
+.icon-btn.on{color:var(--accent-text);background:var(--accent-soft)}
+.dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--rose);box-shadow:0 0 0 2px var(--bg)}
+.vsep{width:1px;height:22px;background:var(--line);margin:0 6px}
+
+.work{display:grid;grid-template-columns:228px minmax(0,1fr);min-height:0}
+
+/* ---------- inbox panel ---------- */
+.inbox{padding:18px 10px 14px 14px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;min-height:0}
+.inbox-head{display:flex;align-items:flex-start;gap:8px;padding:0 6px 10px}
+.inbox-head h1{font-size:21px;font-weight:800;letter-spacing:-.015em;line-height:1.2}
+.inbox-head p{color:var(--text-3);font-size:12.5px;font-weight:600;margin-top:2px}
+.inbox-head .icon-btn{margin-left:auto;border:1px solid var(--line);background:var(--surface)}
+.q-label{padding:12px 8px 6px}
+.q-item{display:flex;align-items:center;gap:10px;height:36px;padding:0 8px 0 9px;border-radius:10px;color:var(--text-2);font-weight:600;font-size:13.5px;width:100%;text-align:left}
+.q-item:hover{background:var(--hover);color:var(--text)}
+.q-item.active{background:var(--surface);color:var(--text);box-shadow:0 0 0 1px var(--line) inset}
+.q-item .n{margin-left:auto;font-size:12px;font-weight:700;color:var(--text-3);font-variant-numeric:tabular-nums;padding:1px 7px;border-radius:999px}
+.q-item.warn .n{color:var(--amber);background:var(--amber-soft)}
+.q-item.alert .n{color:var(--rose);background:var(--rose-soft)}
+.q-item.zero{color:var(--text-3)}
+.q-item.zero .n{font-weight:600}
+.q-item .qi{color:var(--text-3)}
+.q-item.active .qi{color:var(--accent-text)}
+.ch-ico{width:22px;height:22px;flex:none;border-radius:7px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 15%,transparent);color:var(--c)}
+.pulse{margin-top:auto;border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--surface);display:flex;flex-direction:column;gap:10px}
+.pulse-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--text-2);font-weight:600}
+.pulse-row b{font-size:15px;color:var(--text);font-weight:800;font-variant-numeric:tabular-nums}
+.pulse-row small{color:var(--text-3);font-weight:600;font-size:11.5px}
+.live{display:flex;align-items:center;gap:7px}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+
+/* ---------- desk ---------- */
+.desk{margin:12px 12px 12px 2px;border:1px solid var(--line);border-radius:16px;background:var(--surface);display:grid;grid-template-columns:320px minmax(0,1fr) 288px;overflow:hidden;min-height:0}
+.app.ctx-closed .desk{grid-template-columns:320px minmax(0,1fr)}
+.app.ctx-closed .ctx{display:none}
+
+.list{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;min-width:0}
+.list-head{padding:16px 16px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+.list-title{display:flex;align-items:center;gap:8px}
+.list-title h2{font-size:15px;font-weight:800}
+.list-title span{font-size:12.5px;color:var(--text-3);font-weight:700}
+.list-title .icon-btn{margin-left:auto;width:32px;height:32px}
+.search{display:flex;align-items:center;gap:8px;height:38px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--sunk);color:var(--text-3)}
+.search:focus-within{border-color:var(--accent)}
+.search input{flex:1;border:0;background:transparent;outline:none;color:var(--text);min-width:0;font-size:13.5px}
+.search input::placeholder{color:var(--text-3)}
+.seg{display:flex;gap:4px}
+.seg button{height:28px;padding:0 11px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--text-2);border:1px solid var(--line)}
+.seg button:hover{color:var(--text);background:var(--hover)}
+.seg button.on{background:var(--accent-soft);color:var(--accent-text);border-color:transparent}
+.rows{overflow-y:auto;flex:1;min-height:0}
+.row{display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;padding:13px 16px 13px 16px;border-bottom:1px solid var(--line);position:relative;width:100%;text-align:left}
+.row:hover{background:var(--hover)}
+.row.sel{background:var(--accent-soft)}
+.row.sel::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
+.av{width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;position:relative;background:hsl(var(--h) var(--av-bg));color:hsl(var(--h) var(--av-fg))}
+.av .badge{position:absolute;right:-4px;bottom:-4px;width:19px;height:19px;border-radius:50%;background:var(--c);display:grid;place-items:center;border:2px solid var(--surface);color:#fff}
+.row.sel .av .badge{border-color:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.r1{display:flex;align-items:center;gap:8px}
+.r1 .name{font-weight:700;font-size:13.5px}
+.r1 .time{margin-left:auto;font-size:11.5px;color:var(--text-3);font-weight:600;flex:none}
+.prev{font-size:13px;color:var(--text-3);margin-top:2px;display:flex;align-items:center;gap:5px}
+.row.unread .prev{color:var(--text);font-weight:600}
+.row.unread .r1 .time{color:var(--accent-text);font-weight:800}
+.r3{display:flex;align-items:center;gap:6px;margin-top:7px}
+.chip{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.chip.approval{background:var(--amber-soft);color:var(--amber)}
+.chip.handoff{background:var(--rose-soft);color:var(--rose)}
+.chip.ai{background:var(--hover);color:var(--text-2)}
+.chip.human{background:var(--accent-soft);color:var(--accent-text)}
+.chip.resolved{background:var(--green-soft);color:var(--green)}
+.agent-mini{width:18px;height:18px;border-radius:50%;object-fit:cover}
+.unread-n{margin-left:auto;min-width:20px;height:20px;border-radius:10px;background:var(--accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;padding:0 6px}
+
+/* thread */
+.thread{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--sunk)}
+.th-head{display:flex;align-items:center;gap:10px;padding:12px 12px 12px 16px;border-bottom:1px solid var(--line);background:var(--surface);min-height:68px}
+.th-who{min-width:0}
+.th-who h3{font-size:15.5px;font-weight:800;line-height:1.25}
+.th-who p{font-size:12.5px;color:var(--text-3);font-weight:600;display:flex;align-items:center;gap:6px;margin-top:1px}
+.th-actions{margin-left:auto;display:flex;gap:4px;align-items:center;flex:none}
+.conductor{display:flex;align-items:center;gap:8px;height:34px;padding:0 12px 0 4px;border-radius:999px;background:var(--hover);font-size:12.5px;color:var(--text-2);font-weight:600;white-space:nowrap;margin-right:4px}
+.conductor img{width:26px;height:26px;border-radius:50%;object-fit:cover}
+.conductor b{color:var(--text);font-weight:800}
+.conductor.approval{background:var(--amber-soft);color:var(--amber)} .conductor.approval b{color:inherit}
+.conductor.handoff{background:var(--rose-soft);color:var(--rose);padding-left:12px} .conductor.handoff b{color:inherit}
+.conductor.human{background:var(--accent-soft);color:var(--accent-text);padding-left:12px}
+.conductor.resolved{background:var(--green-soft);color:var(--green);padding-left:12px}
+.btn{height:36px;padding:0 14px;border-radius:10px;font-weight:700;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);background:var(--surface);color:var(--text);white-space:nowrap}
+.btn:hover{background:var(--hover)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.sm{height:32px;padding:0 12px;font-size:12.5px}
+.btn.ghost-danger{border-color:transparent;color:var(--rose);background:transparent}
+.btn.ghost-danger:hover{background:var(--rose-soft)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;filter:none}
+.th-body{flex:1;overflow-y:auto;padding:18px 28px 18px;display:flex;flex-direction:column;gap:10px;min-height:0}
+.day{align-self:center;margin:2px 0 6px}
+.msg{max-width:min(500px,76%);display:flex;flex-direction:column;gap:5px}
+.msg.in{align-self:flex-start}
+.msg.out{align-self:flex-end;align-items:flex-end}
+.bubble{padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.5}
+.msg.in .bubble{background:var(--surface);border:1px solid var(--line);border-top-left-radius:6px}
+.msg.ai .bubble{background:var(--ai-bubble);border:1px solid var(--ai-line);border-top-right-radius:6px}
+.msg.human .bubble{background:var(--accent);color:#fff;border-top-right-radius:6px}
+.msg.note .bubble{background:var(--amber-soft);border:1px dashed var(--amber-line);border-top-right-radius:6px}
+.meta{font-size:11.5px;color:var(--text-3);font-weight:600;display:flex;align-items:center;gap:6px}
+.meta img{width:16px;height:16px;border-radius:50%;object-fit:cover}
+.meta .ok{color:var(--green);display:inline-flex;align-items:center;gap:4px}
+.slots{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.slot{border:1px solid var(--ai-line);border-radius:8px;padding:4px 9px;font-size:12.5px;font-weight:700;background:var(--surface);color:var(--text-2)}
+.slot.picked{border-color:var(--accent);color:var(--accent-text);background:var(--accent-soft)}
+.event{align-self:center;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2);font-weight:600;padding:6px 12px 6px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line);max-width:92%}
+.event .ev-ico{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent-text);flex:none}
+.event.cal .ev-ico{background:var(--green-soft);color:var(--green)}
+.event.hand .ev-ico{background:var(--rose-soft);color:var(--rose)}
+.event time{color:var(--text-3);font-weight:600;flex:none}
+.ap-card{align-self:flex-end;width:min(540px,92%);border:1px solid var(--amber-line);background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);flex:none}
+.ap-head{display:flex;align-items:center;gap:9px;padding:11px 16px;background:var(--amber-soft);color:var(--amber);font-weight:800;font-size:13px}
+.ap-head .when{margin-left:auto;font-weight:600;font-size:12px}
+.ap-body{padding:14px 16px 12px}
+.ap-from{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-3);font-weight:600;margin-bottom:8px}
+.ap-from img{width:22px;height:22px;border-radius:50%;object-fit:cover}
+.ap-from b{color:var(--text);font-weight:800}
+.ap-text{font-size:14px;line-height:1.55;color:var(--text);padding:11px 14px;border-radius:12px;background:var(--ai-bubble);border:1px solid var(--ai-line);outline:none}
+.ap-text[contenteditable="true"]{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.ap-rule{display:flex;align-items:flex-start;gap:7px;line-height:1.45;font-size:12.5px;color:var(--text-3);font-weight:600;margin-top:10px}
+.ap-rule a{color:var(--accent-text);text-decoration:none;font-weight:700}
+.ap-rule a:hover{text-decoration:underline}
+.ap-actions{display:flex;gap:8px;padding:0 16px 14px;align-items:center}
+.ap-actions .btn.ghost-danger{margin-left:auto}
+
+.composer{padding:10px 18px 14px;background:var(--surface);border-top:1px solid var(--line)}
+.hint{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-3);font-weight:600;margin:0 2px 9px}
+.hint b{color:var(--text-2);font-weight:800}
+.hint .link{margin-left:auto;color:var(--accent-text);font-weight:700;font-size:12.5px;white-space:nowrap}
+.cbox{border:1px solid var(--line);border-radius:14px;background:var(--sunk);transition:border-color .15s,background .15s}
+.cbox:focus-within{border-color:var(--accent)}
+.cbox.note{background:var(--amber-soft);border-color:var(--amber-line)}
+.ctabs{display:flex;gap:2px;padding:6px 6px 0}
+.ctab{height:28px;padding:0 10px;border-radius:8px;font-size:12.5px;font-weight:700;color:var(--text-3)}
+.ctab:hover{color:var(--text)}
+.ctab.on{color:var(--text);background:var(--hover)}
+.cbox.note .ctab.on{background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--amber)}
+.cbox textarea{display:block;width:100%;border:0;background:transparent;resize:none;padding:8px 14px 4px;color:var(--text);height:44px;outline:none;font-size:14px}
+.cbox textarea::placeholder{color:var(--text-3)}
+.ctools{display:flex;align-items:center;gap:2px;padding:2px 6px 6px}
+.tool{height:30px;padding:0 8px;border-radius:8px;display:inline-flex;align-items:center;gap:6px;color:var(--text-3);font-size:12.5px;font-weight:700}
+.tool:hover{background:var(--hover);color:var(--text)}
+.tool.ai .ai-txt{background:var(--ai);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ctools .btn{margin-left:auto}
+
+/* context */
+.ctx{border-left:1px solid var(--line);overflow-y:auto;background:var(--surface);min-height:0}
+.ctx-sec{padding:18px 20px;border-bottom:1px solid var(--line)}
+.ctx-sec:last-child{border-bottom:0}
+.contact{display:flex;gap:12px;align-items:center}
+.contact .av{width:46px;height:46px;font-size:15px}
+.contact h4{font-size:16px;font-weight:800;line-height:1.25}
+.contact p{font-size:12.5px;color:var(--text-3);font-weight:600;display:flex;align-items:center;gap:6px;margin-top:2px}
+.facts{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.fact{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--hover);color:var(--text-2)}
+.ai-card{position:relative;border-radius:14px;padding:14px 14px 12px;background:var(--ai-bubble)}
+.ai-card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:var(--ai);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.75;pointer-events:none}
+.ai-title{display:flex;align-items:center;gap:7px}
+.ai-title .caps{background:var(--ai);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ai-card p{font-size:13.5px;color:var(--text);line-height:1.55;margin-top:8px}
+.next{margin-top:12px;padding-top:10px;border-top:1px solid var(--ai-line);display:flex;gap:8px;font-size:12.5px;font-weight:700;color:var(--text)}
+.next .i{color:var(--accent-text);margin-top:1px}
+.next small{display:block;color:var(--text-3);font-weight:700;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1px}
+.ai-foot{margin-top:10px;font-size:11.5px;color:var(--text-3);font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.ai-foot button{color:var(--accent-text);font-weight:700;font-size:11.5px;display:inline-flex;gap:4px;align-items:center}
+.sec-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.kv{display:grid;grid-template-columns:88px minmax(0,1fr);gap:12px 10px;font-size:13px;align-items:center}
+.kv dt{color:var(--text-3);font-weight:600}
+.kv dd{font-weight:700;min-width:0}
+.agent-pill{display:flex;align-items:center;gap:8px;min-width:0}
+.agent-pill img{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none}
+.agent-pill small{display:block;color:var(--text-3);font-weight:600;font-size:11.5px;line-height:1.2}
+.agent-pill span{line-height:1.25}
+.progress{height:5px;border-radius:3px;background:var(--hover);overflow:hidden;margin-top:6px}
+.progress span{display:block;height:100%;border-radius:3px;background:var(--accent)}
+.flow small{color:var(--text-3);font-weight:600;font-size:11.5px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--text-2)}
+.hist{list-style:none;display:flex;flex-direction:column}
+.hist li{display:grid;grid-template-columns:42px minmax(0,1fr);gap:10px;padding:8px 0;font-size:13px}
+.hist li+li{border-top:1px solid var(--line)}
+.hist time{color:var(--text-3);font-weight:700;font-size:12px;padding-top:1px}
+.hist b{font-weight:700;display:block}
+.hist small{color:var(--text-3);font-weight:600;font-size:12px}
+.muted-note{font-size:12.5px;color:var(--text-3);font-weight:600}
+
+/* states */
+.empty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:56px 28px;gap:10px;margin:auto 0}
+.em-ico{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:color-mix(in srgb,var(--c,var(--accent)) 14%,transparent);color:var(--c,var(--accent));margin-bottom:4px}
+.empty h5{font-size:15px;font-weight:800}
+.empty p{font-size:13px;color:var(--text-3);font-weight:600;max-width:270px}
+.empty .btn{margin-top:6px}
+.sk-row{display:grid;grid-template-columns:40px 1fr;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.sk{border-radius:6px;background:linear-gradient(90deg,var(--hover) 0%,var(--line) 50%,var(--hover) 100%);background-size:200% 100%;animation:sh 1.1s linear infinite}
+@keyframes sh{to{background-position:-200% 0}}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);opacity:0;pointer-events:none;display:flex;gap:10px;align-items:center;padding:12px 16px;border-radius:12px;background:var(--text);color:var(--bg);font-weight:700;font-size:13.5px;box-shadow:var(--shadow);transition:opacity .2s,transform .2s;z-index:90}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast .i{color:var(--green)}
+html[data-theme="light"] .toast .i{color:#4ADE80}
+
+@media (max-width:1360px){.work{grid-template-columns:216px minmax(0,1fr)}.desk{grid-template-columns:316px minmax(0,1fr) 284px}.app.ctx-closed .desk{grid-template-columns:316px minmax(0,1fr)}}
+@media (max-width:1180px){.desk{grid-template-columns:300px minmax(0,1fr)}.ctx{display:none}.gsearch{display:none}}
+@media (max-width:900px){.work{grid-template-columns:1fr}.inbox{display:none}.conductor{display:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="gAi" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9333EA"/><stop offset=".6" stop-color="#2563EB"/><stop offset="1" stop-color="#22D3EE"/></linearGradient>
+</defs></svg>
+
+<div class="app" id="app">
+  <nav class="nav" aria-label="Menu principal"><div class="nav-inner" id="navInner"></div></nav>
+  <div class="scrim" id="scrim"></div>
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn" id="navToggle" aria-label="Abrir menu" data-tip="Abrir menu"></button>
+      <div class="crumbs"><span>Operar</span><span aria-hidden="true">/</span><b>Conversas</b></div>
+      <label class="gsearch" id="gsearch"></label>
+      <div class="top-actions" id="topActions"></div>
+    </header>
+    <div class="work">
+      <aside class="inbox" id="inbox" aria-label="Filas e canais"></aside>
+      <section class="desk">
+        <div class="list" id="list"></div>
+        <div class="thread" id="thread"></div>
+        <aside class="ctx" id="ctx" aria-label="Contexto da conversa"></aside>
+      </section>
+    </div>
+  </div>
+</div>
+<div class="tip" id="tip"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+/* ---------------- icons ---------------- */
+var P={
+  home:'<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  bot:'<path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/>',
+  db:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  flow:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
+  play:'<path d="M7 4.5v15l12-7.5z"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  clip:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>',
+  msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  activity:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+  zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+  headph:'<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>',
+  plug:'<path d="M12 22v-5"/><path d="M9 8V2M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8z"/>',
+  chart:'<path d="M3 3v18h18"/><path d="M8 17v-5M13 17V8M18 17v-8"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  panelL:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/>',
+  panelR:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/>',
+  globe:'<circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19"/><path d="M12 2.5a14.5 14.5 0 0 1 0 19 14.5 14.5 0 0 1 0-19z"/>',
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+  moon:'<path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z"/>',
+  inbox:'<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  hand:'<circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M19 8v6M16 11h6"/>',
+  ucheck:'<circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="m16 11 2 2 4-4"/>',
+  ccheck:'<circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  checks:'<path d="M17 7 7.5 16.5 3 12"/><path d="m22 10-6.5 6.5-1.5-1.5"/>',
+  send:'<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>',
+  clipA:'<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
+  lines:'<path d="M4 6h16M4 12h10M4 18h7"/>',
+  more:'<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',
+  pencil:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>',
+  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/>',
+  transfer:'<path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>',
+  ret:'<path d="M9 10 4 15l5 5"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/>',
+  filter:'<path d="M3 5h18M6 12h12M10 19h4"/>',
+  compose:'<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/>',
+  refresh:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
+  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>',
+  wa:'<path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9z"/><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"/>',
+  ig:'<rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><path d="M17.5 6.5h.01"/>',
+  igc:'<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/>',
+  tg:'<path d="m21.5 3.5-19 7.3 6.6 2.4 2.4 6.8 3.7-4.4 4.9 3.6z"/><path d="m9.1 13.2 8.3-6.2"/>',
+  mail:'<rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>'
+};
+function ic(n,s,w){s=s||18;return '<svg class="i" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(w||1.8)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>';}
+function spark(s){s=s||14;return '<svg class="i" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" aria-hidden="true"><path fill="url(#gAi)" d="M11 2.5c.8 4.8 3.3 7.3 8.5 8.5-5.2 1.2-7.7 3.7-8.5 8.5-.8-4.8-3.3-7.3-8.5-8.5 5.2-1.2 7.7-3.7 8.5-8.5z"/><path fill="url(#gAi)" d="M19.5 15.5c.3 1.7 1 2.4 2.5 2.75-1.5.35-2.2 1.05-2.5 2.75-.3-1.7-1-2.4-2.5-2.75 1.5-.35 2.2-1.05 2.5-2.75z"/></svg>';}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function $(id){return document.getElementById(id);}
+
+/* ---------------- data ---------------- */
+var CH={
+  wa:{name:'WhatsApp',c:'var(--wa)',icon:'wa'},
+  ig:{name:'Instagram Direct',c:'var(--ig)',icon:'ig'},
+  igc:{name:'Comentários',full:'Comentários do Instagram',c:'var(--ig)',icon:'igc'},
+  tg:{name:'Telegram',c:'var(--tg)',icon:'tg'},
+  outlook:{name:'Outlook',c:'var(--outlook)',icon:'mail'},
+  gmail:{name:'Gmail',c:'var(--gmail)',icon:'mail'}
+};
+var CH_ORDER=[['wa',104],['ig',51],['igc',17],['tg',2],['outlook',0],['gmail',0]];
+var AG={
+  atend:{name:'Atendimento WhatsApp',kind:'Agente global',img:'assets/avatar-01.webp'},
+  quali:{name:'Qualificação comercial',kind:'Especialista',img:'assets/avatar-08.webp'},
+  cob:{name:'Cobrança',kind:'Especialista',img:'assets/avatar-22.webp'},
+  sup:{name:'Suporte interno',kind:'Agente global',img:'assets/avatar-15.webp'}
+};
+var QUEUES=[
+  {id:'all',label:'Todas abertas',icon:'inbox',n:157},
+  {id:'approval',label:'Para aprovar',icon:'clock',n:16,cls:'warn'},
+  {id:'handoff',label:'Pedem atendente',icon:'hand',n:2,cls:'alert'},
+  {id:'mine',label:'Atribuídas a mim',icon:'ucheck',n:5},
+  {id:'resolved',label:'Resolvidas hoje',icon:'ccheck',n:38}
+];
+
+var CONVS=[
+ {id:'ana',name:'Ana Souza',ini:'AS',h:268,ch:'wa',contact:'+55 11 98765-4321',time:'17:20',status:'approval',lead:'atend',spec:'cob',unread:0,
+  since:'Cliente desde mar/2025',count:'4 conversas',
+  flow:{name:'Remarcação de consulta',step:3,total:4,stepName:'Confirmação com o cliente'},
+  tags:['Remarcação','Taxa','Recorrente'],
+  summary:'Ana pediu para remarcar a consulta de quinta (13/11) por causa de uma viagem. O agente já reservou quarta, 19/11, às 14h. Ela perguntou se paga a taxa de remarcação, e o especialista Cobrança preparou uma resposta com isenção, que depende da sua aprovação.',
+  next:'Revisar e aprovar a isenção da taxa',
+  hist:[['02/10','Preparo para exame de sangue','Resolvida pela IA'],['14/08','Agendamento da primeira consulta','Resolvida por Marcos Lima']],
+  msgs:[
+   {t:'day',text:'Hoje'},
+   {t:'in',text:'Oi, boa tarde! Tenho consulta marcada pra quinta às 10h, mas surgiu uma viagem a trabalho. Consigo remarcar?',time:'16:52'},
+   {t:'ai',agent:'atend',text:'Oi, Ana! Consegue sim. Na próxima semana a Dra. Paula tem estes horários livres:',slots:['Ter, 18/11 · 09:30','Qua, 19/11 · 14:00','Sex, 21/11 · 11:00'],picked:1,time:'16:52'},
+   {t:'in',text:'Quarta às 14h fica ótimo',time:'17:18'},
+   {t:'event',kind:'cal',icon:'cal',text:'Consulta remarcada para qua, 19/11 às 14h · Google Agenda atualizado',time:'17:18'},
+   {t:'in',text:'Só uma dúvida: vou ter que pagar a taxa de remarcação? Avisei com bastante antecedência',time:'17:19'},
+   {t:'event',icon:'transfer',text:'Atendimento WhatsApp chamou o especialista Cobrança · dúvida sobre taxa',time:'17:19'},
+   {t:'approval',agent:'cob',time:'17:20',reason:'Isenção de taxa precisa de aprovação humana',rule:'Descontos e isenções',
+    text:'Ana, como você avisou com mais de 48 horas de antecedência, a remarcação fica sem custo. Sua consulta está confirmada para quarta, 19/11, às 14h com a Dra. Paula. Posso ajudar em mais alguma coisa?'}
+  ]},
+ {id:'pedro',name:'Pedro Alves',ini:'PA',h:24,ch:'wa',contact:'+55 21 99812-0457',time:'17:12',status:'handoff',lead:'atend',unread:2,
+  since:'Cliente desde out/2025',count:'2 conversas',flow:null,tags:['Reembolso','Prioridade alta'],
+  summary:'Pedro espera o reembolso de uma consulta cancelada em outubro e já perguntou três vezes. Pediu para falar com uma pessoa. Tom da conversa: frustrado.',
+  next:'Assumir a conversa e conferir o status do reembolso',
+  hist:[['18/10','Cancelamento de consulta','Resolvida pela IA']],
+  msgs:[
+   {t:'day',text:'Hoje'},
+   {t:'in',text:'Oi, o reembolso da consulta que cancelei em outubro ainda não caiu',time:'17:08'},
+   {t:'ai',agent:'atend',text:'Sinto muito pela demora, Pedro. Vou verificar o status do seu reembolso com o financeiro.',time:'17:09'},
+   {t:'in',text:'Já é a terceira vez que pergunto isso',time:'17:11'},
+   {t:'in',text:'Quero falar com uma pessoa, por favor',time:'17:12'},
+   {t:'event',kind:'hand',icon:'hand',text:'Atendimento WhatsApp pediu uma pessoa · cliente solicitou atendimento humano',time:'17:12'}
+  ]},
+ {id:'marina',name:'Marina Luz',ini:'ML',h:330,ch:'ig',contact:'@marina.luz',time:'16:19',status:'ai',lead:'atend',unread:1,
+  since:'Primeiro contato',count:'1 conversa',flow:{name:'Agendamento',step:2,total:4,stepName:'Escolha de horário'},tags:['Agendamento','Novo contato'],
+  summary:'Marina quer saber se há atendimento aos sábados e prefere um horário cedo. O agente está buscando horários disponíveis.',
+  next:'Nenhuma ação necessária, o agente está conduzindo',
+  hist:[],
+  msgs:[
+   {t:'day',text:'Hoje'},
+   {t:'in',text:'Oi! Vocês atendem aos sábados?',time:'16:18'},
+   {t:'ai',agent:'atend',text:'Oi, Marina! Atendemos sim, aos sábados das 8h às 13h. Quer que eu procure um horário para você?',time:'16:18'},
+   {t:'in',text:'Quero sim, de preferência bem cedo',time:'16:19'}
+  ]},
+ {id:'carla',name:'Carla Nunes',ini:'CN',h:190,ch:'tg',contact:'@carlanunes',time:'16:02',status:'ai',lead:'cob',unread:0,
+  since:'Cliente desde jan/2024',count:'9 conversas',flow:null,tags:['Pagamento'],
+  summary:'Carla recebeu o boleto da sessão de fisioterapia e perguntou se pode pagar por Pix. O especialista Cobrança gerou um código Pix com o mesmo valor.',
+  next:'Nenhuma ação necessária, o agente está conduzindo',
+  hist:[['30/09','Segunda via de boleto','Resolvida pela IA'],['12/08','Remarcação de sessão','Resolvida pela IA']],
+  msgs:[
+   {t:'day',text:'Hoje'},
+   {t:'in',text:'Recebi o boleto, mas consigo pagar via Pix?',time:'16:01'},
+   {t:'ai',agent:'cob',text:'Consegue sim, Carla! Gerei um código Pix copia e cola com o mesmo valor, válido até sexta.',time:'16:02'}
+  ]},
+ {id:'novo',name:'+55 11 97012-3344',ini:'',h:215,ch:'wa',contact:'Novo contato · veio de anúncio',time:'15:47',status:'ai',lead:'quali',unread:1,
+  since:'Primeiro contato',count:'1 conversa',flow:{name:'Qualificação de lead',step:1,total:3,stepName:'Perguntas de enquadramento'},tags:['Lead','Anúncio Instagram'],
+  summary:'Contato novo vindo do anúncio no Instagram. O agente Qualificação comercial começou as perguntas para indicar o melhor plano.',
+  next:'Nenhuma ação necessária, o agente está conduzindo',
+  hist:[],
+  msgs:[
+   {t:'day',text:'Hoje'},
+   {t:'in',text:'Olá, vi o anúncio de vocês no Instagram',time:'15:46'},
+   {t:'ai',agent:'quali',text:'Oi! Que bom ter você por aqui. Posso te fazer duas perguntas rápidas para indicar o melhor plano?',time:'15:46'},
+   {t:'in',text:'Pode sim',time:'15:47'}
+  ]},
+ {id:'rafael',name:'Rafael Mendes',ini:'RM',h:150,ch:'wa',contact:'+55 11 99654-2210',time:'14:30',status:'resolved',lead:'atend',unread:0,
+  since:'Cliente desde mai/2025',count:'3 conversas',flow:null,tags:['Exames'],
+  summary:'Rafael não conseguia acessar o resultado do exame. O agente reenviou o link de acesso e ele confirmou que deu certo.',
+  next:'Conversa resolvida',
+  hist:[['21/07','Agendamento de exame','Resolvida pela IA']],
+  msgs:[
+   {t:'day',text:'Hoje'},
+   {t:'in',text:'Não estou conseguindo abrir o resultado do meu exame',time:'14:21'},
+   {t:'ai',agent:'atend',text:'Vou te reenviar o link de acesso, Rafael. Ele vale por 7 dias.',time:'14:22'},
+   {t:'in',text:'Perfeito, consegui abrir. Obrigado!',time:'14:30'},
+   {t:'event',kind:'cal',icon:'ccheck',text:'Conversa resolvida pelo agente Atendimento WhatsApp',time:'14:30'}
+  ]},
+ {id:'bela',name:'Studio Bela',ini:'SB',h:300,ch:'igc',contact:'@studio.bela · comentário público',time:'11:04',status:'approval',lead:'quali',spec:'quali',unread:0,
+  since:'Primeiro contato',count:'1 conversa',flow:null,tags:['Comentário público','Preço'],
+  summary:'Comentário público pedindo o valor do pacote de 5 sessões de fisioterapia. O agente sugeriu responder em público e enviar os valores no direct.',
+  next:'Aprovar a resposta pública',
+  hist:[],
+  msgs:[
+   {t:'day',text:'Hoje'},
+   {t:'in',text:'Comentou na publicação: qual o valor do pacote de 5 sessões?',time:'11:03'},
+   {t:'approval',agent:'quali',time:'11:04',reason:'Respostas públicas que citam preço precisam de aprovação',rule:'Comunicação pública',
+    text:'Oi! Acabamos de te mandar os valores no direct, dá uma olhadinha por lá.'}
+  ]},
+ {id:'juliana',name:'Juliana Prado',ini:'JP',h:40,ch:'wa',contact:'+55 11 98120-7781',time:'09:48',status:'human',owner:'me',lead:'cob',unread:0,
+  since:'Cliente desde fev/2023',count:'12 conversas',flow:null,tags:['Boleto'],
+  summary:'Juliana pediu a segunda via do boleto. Você reenviou para o e-mail cadastrado e ela confirmou o recebimento.',
+  next:'Resolver a conversa',
+  hist:[['03/11','Dúvida sobre convênio','Resolvida pela IA']],
+  msgs:[
+   {t:'day',text:'Hoje'},
+   {t:'in',text:'Bom dia! Pode me mandar o boleto de novo? Não achei no e-mail',time:'09:41'},
+   {t:'event',icon:'ucheck',text:'Estela Argolo assumiu a conversa',time:'09:43'},
+   {t:'human',text:'Claro, Juliana! Acabei de reenviar para o seu e-mail cadastrado. Confere a caixa de spam também, às vezes ele cai lá.',time:'09:44'},
+   {t:'in',text:'Achei, obrigada!',time:'09:48'}
+  ]},
+ {id:'bruno',name:'Bruno Teixeira',ini:'BT',h:0,ch:'ig',contact:'@bruno.tx',time:'Ontem',status:'handoff',lead:'atend',unread:1,
+  since:'Cliente desde jun/2025',count:'2 conversas',flow:null,tags:['Cobrança em dobro'],
+  summary:'Bruno diz que foi cobrado duas vezes pela mesma consulta. O agente pediu uma pessoa porque o caso envolve estorno.',
+  next:'Assumir a conversa e verificar o estorno',
+  hist:[['10/06','Primeira consulta','Resolvida pela IA']],
+  msgs:[
+   {t:'day',text:'Ontem'},
+   {t:'in',text:'Fui cobrado duas vezes pela mesma consulta',time:'18:40'},
+   {t:'event',kind:'hand',icon:'hand',text:'Atendimento WhatsApp pediu uma pessoa · estorno exige atendimento humano',time:'18:41'}
+  ]},
+ {id:'lucas',name:'Lucas Ferreira',ini:'LF',h:100,ch:'tg',contact:'@lucasf',time:'Ontem',status:'resolved',lead:'atend',unread:0,
+  since:'Cliente desde set/2024',count:'5 conversas',flow:null,tags:['Convênio'],
+  summary:'Lucas precisava da guia do convênio. O agente enviou o documento e a conversa foi encerrada.',
+  next:'Conversa resolvida',
+  hist:[],
+  msgs:[
+   {t:'day',text:'Ontem'},
+   {t:'in',text:'Preciso da guia do convênio pra sessão de amanhã',time:'15:10'},
+   {t:'ai',agent:'atend',text:'Aqui está, Lucas! A guia já está autorizada pelo convênio.',time:'15:11'},
+   {t:'in',text:'Valeu, deu tudo certo',time:'15:15'},
+   {t:'event',kind:'cal',icon:'ccheck',text:'Conversa resolvida pelo agente Atendimento WhatsApp',time:'15:15'}
+  ]}
+];
+
+/* ---------------- state ---------------- */
+var params=new URLSearchParams(location.search);
+var S={queue:'all',channel:null,q:'',seg:'all',sel:params.get('conv')||'ana',tab:'reply',loading:false};
+function conv(id){for(var i=0;i<CONVS.length;i++){if(CONVS[i].id===id)return CONVS[i];}return null;}
+/* relógio da cena: a demo se passa em 10/11 às 17:20 */
+var CLOCK=17*60+21;
+function now(){return String(Math.floor(CLOCK/60)).padStart(2,'0')+':'+String(CLOCK%60).padStart(2,'0');}
+
+/* theme */
+function getTheme(){var p=params.get('theme');if(p==='light'||p==='dark')return p;try{var s=localStorage.getItem('sonia.theme');if(s)return s;}catch(e){}return 'dark';}
+function setTheme(t,save){document.documentElement.setAttribute('data-theme',t);if(save){try{localStorage.setItem('sonia.theme',t);}catch(e){}}renderNav();renderTop();}
+document.documentElement.setAttribute('data-theme',getTheme());
+if(params.get('ctx')==='0')$('app').classList.add('ctx-closed');
+
+/* ---------------- nav ---------------- */
+var NAV=[
+  ['Visão geral',[['home','Início'],['grid','Painel da operação']]],
+  ['Construir',[['bot','Agentes'],['db','Base de conhecimento'],['flow','Criar fluxos'],['play','Testar agentes'],['shield','Regras e segurança'],['clip','Solicitações de aprovação',16,'warn']]],
+  ['Operar',[['msg','Conversas',0,'',true],['activity','Fluxos em execução'],['zap','Campanhas e cadências'],['headph','Monitoramento']]],
+  ['Administração',[['plug','Integrações'],['chart','Relatórios'],['gear','Configurações']]]
+];
+function renderNav(){
+  var dark=document.documentElement.getAttribute('data-theme')==='dark';
+  var h='<div class="brand"><img class="star only-dark" src="assets/star-escuro.png" alt="SON.IA"><img class="star only-light" src="assets/star-claro.png" alt="SON.IA">'+
+        '<img class="word only-dark" src="assets/logo-escuro.png" alt="SON.IA"><img class="word only-light" src="assets/logo-claro.png" alt="SON.IA"></div><div class="nav-scroll">';
+  NAV.forEach(function(g){
+    h+='<div class="nav-group"><div class="nav-label caps">'+g[0]+'</div>';
+    g[1].forEach(function(it){
+      var badge=it[2]?'<span class="nav-badge '+(it[3]||'')+'">'+(it[2]>99?'99+':it[2])+'</span>':'';
+      h+='<button class="nav-item'+(it[4]?' active':'')+'" data-tip="'+it[1]+'"'+(it[4]?' aria-current="page"':'')+'>'+ic(it[0],19)+'<span class="lbl">'+it[1]+'</span>'+badge+'</button>';
+    });
+    h+='</div>';
+  });
+  h+='</div><div class="nav-foot"><button class="nav-item" id="themeBtn" data-tip="'+(dark?'Mudar para tema claro':'Mudar para tema escuro')+'">'+ic(dark?'sun':'moon',19)+'<span class="lbl">'+(dark?'Tema claro':'Tema escuro')+'</span></button>'+
+     '<div class="me-row"><span class="me-av">EA</span><span class="lbl"><b>Estela Argolo</b><small>Administradora</small></span></div></div>';
+  $('navInner').innerHTML=h;
+  $('themeBtn').onclick=function(){setTheme(dark?'light':'dark',true);};
+}
+function renderTop(){
+  $('navToggle').innerHTML=ic('panelL',18);
+  $('gsearch').innerHTML=ic('search',16)+'<input placeholder="Buscar conversas, contatos ou agentes" aria-label="Busca global"><kbd>Ctrl K</kbd>';
+  $('topActions').innerHTML='<button class="icon-btn" aria-label="Mudar idioma" data-tip="Idioma">'+ic('globe',18)+'</button>'+
+    '<button class="icon-btn" aria-label="Notificações" data-tip="Notificações">'+ic('bell',18)+'<span class="dot"></span></button>'+
+    '<span class="vsep"></span><span class="me-av" style="width:32px;height:32px">EA</span>';
+}
+$('navToggle').onclick=function(){$('app').classList.toggle('nav-open');hideTip();};
+$('scrim').onclick=function(){$('app').classList.remove('nav-open');};
+document.addEventListener('keydown',function(e){if(e.key==='Escape')$('app').classList.remove('nav-open');});
+
+/* tooltips (collapsed rail + icon buttons) */
+var tip=$('tip');
+function hideTip(){tip.classList.remove('show');}
+document.addEventListener('mouseover',function(e){
+  var el=e.target.closest('[data-tip]');
+  if(!el){hideTip();return;}
+  if(el.classList.contains('nav-item')&&$('app').classList.contains('nav-open')){hideTip();return;}
+  var r=el.getBoundingClientRect();tip.textContent=el.getAttribute('data-tip');
+  if(el.closest('.nav')){tip.style.left=(r.right+10)+'px';tip.style.top=(r.top+r.height/2-14)+'px';}
+  else{tip.style.left=Math.max(8,Math.min(window.innerWidth-tip.offsetWidth-8,r.left+r.width/2-tip.offsetWidth/2))+'px';tip.style.top=(r.bottom+8)+'px';}
+  tip.classList.add('show');
+});
+
+/* ---------------- inbox ---------------- */
+function renderInbox(){
+  var h='<div class="inbox-head"><div><h1>Conversas</h1><p>157 abertas agora</p></div><button class="icon-btn" aria-label="Nova conversa" data-tip="Nova conversa">'+ic('compose',17)+'</button></div>';
+  h+='<div class="q-label caps">Filas</div>';
+  QUEUES.forEach(function(q){
+    var on=!S.channel&&S.queue===q.id;
+    h+='<button class="q-item '+(q.cls||'')+(on?' active':'')+'" data-queue="'+q.id+'"><span class="qi">'+ic(q.icon,17)+'</span>'+q.label+'<span class="n">'+q.n+'</span></button>';
+  });
+  h+='<div class="q-label caps">Canais</div>';
+  CH_ORDER.forEach(function(c){
+    var m=CH[c[0]],on=S.channel===c[0];
+    h+='<button class="q-item'+(c[1]===0?' zero':'')+(on?' active':'')+'" data-channel="'+c[0]+'"'+(m.full?' data-tip="'+m.full+'"':'')+'><span class="ch-ico" style="--c:'+m.c+'">'+ic(m.icon,13,2)+'</span><span class="trunc">'+m.name+'</span><span class="n">'+c[1]+'</span></button>';
+  });
+  h+='<div class="pulse"><div class="live caps"><i></i>Operação agora</div>'+
+     '<div class="pulse-row"><span>Resolvidas hoje<br><small>31 pela IA, 7 pelo time</small></span><b>38</b></div>'+
+     '<div class="pulse-row"><span>1ª resposta média</span><b>42s</b></div>'+
+     '<div class="pulse-row"><span>Última atividade</span><b>17:20</b></div></div>';
+  $('inbox').innerHTML=h;
+  $('inbox').querySelectorAll('[data-queue]').forEach(function(b){b.onclick=function(){S.queue=b.getAttribute('data-queue');S.channel=null;S.seg='all';refreshList(true);};});
+  $('inbox').querySelectorAll('[data-channel]').forEach(function(b){b.onclick=function(){S.channel=b.getAttribute('data-channel');S.queue='all';S.seg='all';refreshList(true);};});
+}
+
+/* ---------------- list ---------------- */
+var STATUS={
+  approval:{label:'Aprovação pendente',icon:'clock'},
+  handoff:{label:'Pede atendente',icon:'hand'},
+  ai:{label:'Agente IA',icon:null},
+  human:{label:'Com você',icon:'ucheck'},
+  resolved:{label:'Resolvida',icon:'check'}
+};
+function chip(c){
+  var s=STATUS[c.status];
+  var icon=c.status==='ai'?spark(12):ic(s.icon,12,2.2);
+  return '<span class="chip '+c.status+'">'+icon+s.label+'</span>';
+}
+function lastPreview(c){
+  for(var i=c.msgs.length-1;i>=0;i--){
+    var m=c.msgs[i];
+    if(m.t==='approval')return {html:ic('clock',13,2),text:'Rascunho de '+AG[m.agent].name+' aguarda aprovação'};
+    if(m.t==='in')return {html:'',text:m.text};
+    if(m.t==='ai')return {html:spark(12),text:m.text};
+    if(m.t==='human')return {html:'',text:'Você: '+m.text};
+    if(m.t==='note')return {html:'',text:'Nota: '+m.text};
+  }
+  return {html:'',text:''};
+}
+function avatar(c,size){
+  var inner=c.ini?esc(c.ini):ic('user',size>40?20:17);
+  return '<span class="av" style="--h:'+c.h+'">'+inner+'<span class="badge" style="--c:'+CH[c.ch].c+'">'+ic(CH[c.ch].icon,10,2.4)+'</span></span>';
+}
+function filtered(){
+  return CONVS.filter(function(c){
+    if(S.channel){if(c.ch!==S.channel)return false;if(c.status==='resolved')return false;}
+    else if(S.queue==='all'){if(c.status==='resolved')return false;}
+    else if(S.queue==='mine'){if(c.owner!=='me')return false;}
+    else if(c.status!==S.queue)return false;
+    if(S.seg==='unread'&&!c.unread)return false;
+    if(S.seg==='ai'&&c.status!=='ai')return false;
+    if(S.q){var t=(c.name+' '+c.contact+' '+lastPreview(c).text).toLowerCase();if(t.indexOf(S.q.toLowerCase())<0)return false;}
+    return true;
+  });
+}
+function listTitle(){
+  if(S.channel){var n=0;CH_ORDER.forEach(function(c){if(c[0]===S.channel)n=c[1];});return [CH[S.channel].name,n];}
+  for(var i=0;i<QUEUES.length;i++)if(QUEUES[i].id===S.queue)return [QUEUES[i].label,QUEUES[i].n];
+}
+function renderListShell(){
+  var t=listTitle();
+  $('list').innerHTML='<div class="list-head"><div class="list-title"><h2>'+t[0]+'</h2><span>'+t[1]+'</span><button class="icon-btn" aria-label="Ordenar" data-tip="Mais recentes primeiro">'+ic('filter',16)+'</button></div>'+
+    '<label class="search">'+ic('search',16)+'<input id="q" placeholder="Buscar nome ou telefone" aria-label="Buscar conversa" value="'+esc(S.q)+'"></label>'+
+    '<div class="seg" role="tablist"><button data-seg="all" class="'+(S.seg==='all'?'on':'')+'">Todas</button><button data-seg="unread" class="'+(S.seg==='unread'?'on':'')+'">Não lidas</button><button data-seg="ai" class="'+(S.seg==='ai'?'on':'')+'">Com IA</button></div></div>'+
+    '<div class="rows" id="rows"></div>';
+  var q=$('q');q.oninput=function(){S.q=q.value;renderRows();};
+  $('list').querySelectorAll('[data-seg]').forEach(function(b){b.onclick=function(){S.seg=b.getAttribute('data-seg');$('list').querySelectorAll('[data-seg]').forEach(function(x){x.classList.toggle('on',x===b);});renderRows();};});
+}
+function renderRows(){
+  var box=$('rows');
+  if(S.loading){
+    var sk='';for(var i=0;i<6;i++)sk+='<div class="sk-row"><span class="sk" style="width:40px;height:40px;border-radius:50%"></span><span style="display:flex;flex-direction:column;gap:8px;padding-top:3px"><span class="sk" style="width:'+(50+i*7%40)+'%;height:11px"></span><span class="sk" style="width:85%;height:10px"></span><span class="sk" style="width:90px;height:18px;border-radius:9px"></span></span></div>';
+    box.innerHTML=sk;return;
+  }
+  var items=filtered();
+  if(!items.length){
+    if(S.channel&&(S.channel==='outlook'||S.channel==='gmail')){
+      var m=CH[S.channel];
+      box.innerHTML='<div class="empty"><span class="em-ico" style="--c:'+m.c+'">'+ic('mail',24)+'</span><h5>Nenhum e-mail aberto no '+m.name+'</h5><p>A caixa está conectada e sem pendências. Quando um e-mail chegar, ele aparece aqui já triado pelo agente.</p><button class="btn sm">'+ic('gear',15)+'Configurar canal</button></div>';
+    }else if(S.q){
+      box.innerHTML='<div class="empty"><span class="em-ico">'+ic('search',24)+'</span><h5>Nenhuma conversa encontrada</h5><p>Não achamos nada para “'+esc(S.q)+'”. Tente o nome, o telefone ou um trecho da mensagem.</p><button class="btn sm" id="clearQ">Limpar busca</button></div>';
+      $('clearQ').onclick=function(){S.q='';$('q').value='';renderRows();};
+    }else{
+      box.innerHTML='<div class="empty"><span class="em-ico" style="--c:var(--green)">'+ic('ccheck',24)+'</span><h5>Tudo em dia por aqui</h5><p>Nenhuma conversa nesta fila agora. Os agentes seguem atendendo nos outros canais.</p></div>';
+    }
+    return;
+  }
+  box.innerHTML=items.map(function(c){
+    var p=lastPreview(c),ag=AG[c.status==='approval'?c.spec:c.lead];
+    var right=c.unread?'<span class="unread-n">'+c.unread+'</span>':'';
+    var agentImg=(c.status==='ai'||c.status==='approval')?'<img class="agent-mini" src="'+ag.img+'" alt="" title="'+ag.name+'">':'';
+    return '<button class="row'+(c.id===S.sel?' sel':'')+(c.unread?' unread':'')+'" data-id="'+c.id+'">'+avatar(c,40)+
+      '<span style="min-width:0"><span class="r1"><span class="name trunc">'+esc(c.name)+'</span><span class="time">'+c.time+'</span></span>'+
+      '<span class="prev">'+p.html+'<span class="trunc">'+esc(p.text)+'</span></span>'+
+      '<span class="r3">'+chip(c)+agentImg+right+'</span></span></button>';
+  }).join('');
+  box.querySelectorAll('.row').forEach(function(r){r.onclick=function(){select(r.getAttribute('data-id'));};});
+}
+function refreshList(withLoading){
+  renderInbox();renderListShell();
+  if(withLoading){S.loading=true;renderRows();setTimeout(function(){S.loading=false;renderRows();},380);}
+  else renderRows();
+}
+function select(id){
+  S.sel=id;var c=conv(id);if(c)c.unread=0;S.tab='reply';
+  renderRows();renderThread();renderCtx();
+}
+
+/* ---------------- thread ---------------- */
+function msgHtml(m,i){
+  if(m.t==='day')return '<div class="day caps">'+m.text+'</div>';
+  if(m.t==='event')return '<div class="event '+(m.kind||'')+'"><span class="ev-ico">'+ic(m.icon,13,2)+'</span><span>'+esc(m.text)+'</span><time>'+m.time+'</time></div>';
+  if(m.t==='in')return '<div class="msg in"><div class="bubble">'+esc(m.text)+'</div><div class="meta">'+m.time+'</div></div>';
+  if(m.t==='ai'){
+    var ag=AG[m.agent],slots='';
+    if(m.slots)slots='<div class="slots">'+m.slots.map(function(s,k){return '<span class="slot'+(k===m.picked?' picked':'')+'">'+s+'</span>';}).join('')+'</div>';
+    var ok=m.approvedBy?'<span class="ok">'+ic('check',12,2.4)+'Aprovada por '+m.approvedBy+'</span> · ':'';
+    return '<div class="msg out ai"><div class="bubble">'+esc(m.text)+slots+'</div><div class="meta">'+ok+spark(12)+'<span>'+ag.name+'</span><img src="'+ag.img+'" alt=""> · '+m.time+' '+ic('checks',14,2)+'</div></div>';
+  }
+  if(m.t==='human')return '<div class="msg out human"><div class="bubble">'+esc(m.text)+'</div><div class="meta">Você · '+m.time+' '+ic('checks',14,2)+'</div></div>';
+  if(m.t==='note')return '<div class="msg out note"><div class="bubble">'+esc(m.text)+'</div><div class="meta">'+ic('lines',12,2)+'Nota interna · só o time vê · '+m.time+'</div></div>';
+  if(m.t==='approval'){
+    var a=AG[m.agent];
+    return '<div class="ap-card" data-i="'+i+'"><div class="ap-head">'+ic('clock',16,2)+'Aguardando sua aprovação<span class="when">criada às '+m.time+'</span></div>'+
+      '<div class="ap-body"><div class="ap-from"><img src="'+a.img+'" alt="">'+spark(12)+'<span><b>'+a.name+'</b> preparou esta resposta</span></div>'+
+      '<div class="ap-text" id="apText">'+esc(m.text)+'</div>'+
+      '<div class="ap-rule">'+ic('shield',14,2)+'<span>'+m.reason+'<br><a href="#" onclick="return false">Ver regra “'+m.rule+'”</a></span></div></div>'+
+      '<div class="ap-actions"><button class="btn sm primary" id="apOk">'+ic('send',14,2)+'Aprovar e enviar</button><button class="btn sm" id="apEdit">'+ic('pencil',14,2)+'Editar</button><button class="btn sm ghost-danger" id="apNo">'+ic('x',14,2)+'Recusar</button></div></div>';
+  }
+  return '';
+}
+function hintFor(c){
+  if(c.status==='ai'||c.status==='approval'){var ag=AG[c.status==='approval'?c.spec:c.lead];return ic('info',15)+'<span><b>'+ag.name+'</b> está conduzindo. Se você responder, assume a conversa e o agente pausa.</span>';}
+  if(c.status==='handoff')return ic('hand',15)+'<span>O cliente está esperando uma pessoa. Responda para assumir o atendimento.</span>';
+  if(c.status==='human')return ic('ucheck',15)+'<span>Você está conduzindo esta conversa.</span><button class="link" id="giveBack">Devolver ao agente</button>';
+  return ic('ccheck',15)+'<span>Conversa resolvida. Uma nova mensagem do cliente reabre automaticamente.</span>';
+}
+function renderThread(){
+  var c=conv(S.sel),el=$('thread');
+  if(!c){el.innerHTML='<div class="empty"><span class="em-ico">'+ic('msg',24)+'</span><h5>Selecione uma conversa</h5><p>Escolha uma conversa na lista para ver o histórico e responder.</p></div>';return;}
+  var ctxOpen=!$('app').classList.contains('ctx-closed');
+  var acts;
+  if(c.status==='ai'||c.status==='approval'||c.status==='handoff')acts='<button class="btn primary" id="takeOver">'+ic('ucheck',16,2)+'Assumir conversa</button><button class="icon-btn" id="resolve" aria-label="Resolver conversa" data-tip="Resolver conversa">'+ic('ccheck',18)+'</button>';
+  else if(c.status==='human')acts='<button class="btn primary" id="resolve">'+ic('check',16,2)+'Resolver</button>';
+  else acts='<button class="btn" id="reopen">'+ic('refresh',16,2)+'Reabrir</button>';
+  var h='<div class="th-head">'+avatar(c,40)+'<div class="th-who"><h3 class="trunc">'+esc(c.name)+'</h3><p title="'+(CH[c.ch].full||CH[c.ch].name)+'"><span style="color:'+CH[c.ch].c+'">'+ic(CH[c.ch].icon,13,2)+'</span><span class="trunc">'+esc(c.contact)+'</span></p></div>'+
+    '<div class="th-actions">'+acts+'<button class="icon-btn" aria-label="Mais ações" data-tip="Transferir, etiquetar e mais">'+ic('more',18)+'</button>'+
+    '<button class="icon-btn'+(ctxOpen?' on':'')+'" id="ctxToggle" aria-label="Painel de contexto" data-tip="'+(ctxOpen?'Ocultar contexto':'Mostrar contexto')+'">'+ic('panelR',18)+'</button></div></div>';
+  h+='<div class="th-body" id="thBody">'+c.msgs.map(msgHtml).join('')+'</div>';
+  var note=S.tab==='note';
+  h+='<div class="composer"><div class="hint">'+hintFor(c)+'</div><div class="cbox'+(note?' note':'')+'"><div class="ctabs"><button class="ctab'+(note?'':' on')+'" data-tab="reply">Responder</button><button class="ctab'+(note?' on':'')+'" data-tab="note">Nota interna</button></div>'+
+    '<textarea id="ta" placeholder="'+(note?'Escreva uma nota para o time (o cliente não vê)':'Responder pelo '+CH[c.ch].name.split(' ')[0]+' · digite / para respostas rápidas')+'"></textarea>'+
+    '<div class="ctools"><button class="tool" data-tip="Anexar arquivo" aria-label="Anexar">'+ic('clipA',16)+'</button><button class="tool" data-tip="Respostas rápidas">'+ic('lines',16)+'Respostas</button>'+
+    '<button class="tool ai" id="suggest">'+spark(15)+'<span class="ai-txt">Sugerir com IA</span></button>'+
+    '<button class="btn sm primary" id="sendBtn" disabled>'+(note?'Salvar nota':'Enviar')+ic('send',14,2)+'</button></div></div></div>';
+  el.innerHTML=h;
+  var body=$('thBody');body.scrollTop=body.scrollHeight;
+  bindThread(c);
+}
+function bindThread(c){
+  var ta=$('ta'),send=$('sendBtn');
+  ta.oninput=function(){send.disabled=!ta.value.trim();};
+  ta.onkeydown=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(ta.value.trim())doSend(c,ta.value.trim());}};
+  send.onclick=function(){if(ta.value.trim())doSend(c,ta.value.trim());};
+  $('thread').querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){S.tab=b.getAttribute('data-tab');renderThread();$('ta').focus();};});
+  $('suggest').onclick=function(){
+    var s={approval:'Oi, Ana! Pode ficar tranquila, como você avisou com antecedência não tem taxa. Te espero quarta, 19/11, às 14h.',handoff:'Oi! Aqui é a Estela, do time de atendimento. Já estou verificando o seu caso e te dou um retorno em instantes.',ai:'Oi! Aqui é a Estela, do time. Posso te ajudar com mais alguma coisa?',human:'Que bom! Qualquer coisa é só chamar por aqui.',resolved:'Oi! Posso te ajudar com mais alguma coisa?'}[c.status];
+    ta.value=s;send.disabled=false;ta.focus();
+  };
+  var tk=$('takeOver');if(tk)tk.onclick=function(){takeOver(c);toast('Você assumiu a conversa. O agente foi pausado.');rerender();};
+  var rs=$('resolve');if(rs)rs.onclick=function(){c.msgs.push({t:'event',kind:'cal',icon:'ccheck',text:'Conversa resolvida por Estela Argolo',time:now()});c.status='resolved';toast('Conversa resolvida.');rerender();};
+  var ro=$('reopen');if(ro)ro.onclick=function(){c.msgs.push({t:'event',icon:'refresh',text:'Conversa reaberta por Estela Argolo',time:now()});c.status='human';c.owner='me';toast('Conversa reaberta e atribuída a você.');rerender();};
+  var gb=$('giveBack');if(gb)gb.onclick=function(){c.msgs.push({t:'event',icon:'ret',text:'Estela Argolo devolveu a conversa ao agente '+AG[c.lead].name,time:now()});c.status='ai';c.owner=null;toast('Conversa devolvida ao agente.');rerender();};
+  $('ctxToggle').onclick=function(){$('app').classList.toggle('ctx-closed');renderThread();};
+  var ok=$('apOk');
+  if(ok){
+    var card=$('thread').querySelector('.ap-card'),idx=+card.getAttribute('data-i'),m=c.msgs[idx],txt=$('apText');
+    ok.onclick=function(){
+      var text=txt.textContent.trim();
+      c.msgs.splice(idx,1,{t:'ai',agent:m.agent,text:text,time:now(),approvedBy:'Estela Argolo'});
+      if(c.spec&&c.spec!==c.lead)c.msgs.push({t:'event',icon:'ret',text:AG[c.spec].name+' devolveu a conversa ao agente '+AG[c.lead].name,time:now()});
+      c.status='ai';c.next='Nenhuma ação necessária, o agente está conduzindo';
+      QUEUES[1].n=Math.max(0,QUEUES[1].n-1);NAV[1][1][5][2]=QUEUES[1].n;
+      toast('Resposta aprovada e enviada pelo '+CH[c.ch].name.split(' ')[0]+'.');rerender();renderNav();
+    };
+    $('apEdit').onclick=function(){
+      var on=txt.getAttribute('contenteditable')==='true';
+      txt.setAttribute('contenteditable',on?'false':'true');
+      this.innerHTML=on?ic('pencil',14,2)+'Editar':ic('check',14,2)+'Concluir edição';
+      if(!on){txt.focus();var r=document.createRange();r.selectNodeContents(txt);r.collapse(false);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);}
+    };
+    $('apNo').onclick=function(){
+      c.msgs.splice(idx,1,{t:'event',icon:'x',text:'Estela Argolo recusou a resposta de '+AG[m.agent].name,time:now()});
+      takeOver(c,true);QUEUES[1].n=Math.max(0,QUEUES[1].n-1);NAV[1][1][5][2]=QUEUES[1].n;
+      toast('Resposta recusada. A conversa ficou com você.');rerender();renderNav();
+    };
+  }
+}
+function takeOver(c,silent){
+  if(c.status!=='human'){c.msgs.push({t:'event',icon:'ucheck',text:'Estela Argolo assumiu a conversa'+(silent?'':' · agente pausado'),time:now()});}
+  c.status='human';c.owner='me';c.next='Responder o cliente';
+}
+function doSend(c,text){
+  if(S.tab==='note'){c.msgs.push({t:'note',text:text,time:now()});toast('Nota salva. Só o time vê.');}
+  else{takeOver(c);c.msgs.push({t:'human',text:text,time:now()});c.time=now();toast('Mensagem enviada pelo '+CH[c.ch].name.split(' ')[0]+'.');}
+  rerender();
+}
+function rerender(){renderInbox();renderRows();renderThread();renderCtx();CLOCK++;}
+
+/* ---------------- context ---------------- */
+function renderCtx(){
+  var c=conv(S.sel),el=$('ctx');
+  if(!c){el.innerHTML='';return;}
+  var lead=AG[c.lead];
+  var h='<div class="ctx-sec"><div class="contact">'+avatar(c,46)+'<div style="min-width:0"><h4 class="trunc">'+esc(c.name)+'</h4><p><span style="color:'+CH[c.ch].c+'">'+ic(CH[c.ch].icon,13,2)+'</span><span class="trunc">'+esc(c.contact)+'</span></p></div></div>'+
+    '<div class="facts"><span class="fact">'+c.since+'</span><span class="fact">'+c.count+'</span></div></div>';
+  h+='<div class="ctx-sec"><div class="ai-card"><div class="ai-title">'+spark(15)+'<span class="caps">Resumo da conversa</span></div><p>'+esc(c.summary)+'</p>'+
+    '<div class="next">'+ic('arrow',15,2)+'<span><small>Próximo passo</small>'+esc(c.next)+'</span></div>'+
+    '<div class="ai-foot"><span>Atualizado às '+(c.time.indexOf(':')>0?c.time:'18:41')+'</span><button>'+ic('refresh',12,2.2)+'Atualizar</button></div></div></div>';
+  h+='<div class="ctx-sec"><div class="sec-title"><span class="caps">Detalhes</span></div><dl class="kv">';
+  if(c.status==='human')h+='<dt>Responsável</dt><dd><span class="agent-pill"><span class="me-av" style="width:26px;height:26px;font-size:10px">EA</span><span>Você<small>Estela Argolo</small></span></span></dd>';
+  else h+='<dt>Agente</dt><dd><span class="agent-pill"><img src="'+lead.img+'" alt=""><span>'+lead.name+'<small>'+lead.kind+'</small></span></span></dd>';
+  if(c.spec&&c.spec!==c.lead){var sp=AG[c.spec];h+='<dt>Especialista</dt><dd><span class="agent-pill"><img src="'+sp.img+'" alt=""><span>'+sp.name+'<small>'+sp.kind+'</small></span></span></dd>';}
+  if(c.flow)h+='<dt>Fluxo</dt><dd class="flow">'+c.flow.name+'<small style="display:block">Etapa '+c.flow.step+' de '+c.flow.total+' · '+c.flow.stepName+'</small><div class="progress"><span style="width:'+(c.flow.step/c.flow.total*100)+'%"></span></div></dd>';
+  h+='<dt>Canal</dt><dd>'+CH[c.ch].name+'</dd>';
+  h+='<dt>Etiquetas</dt><dd><div class="tags">'+c.tags.map(function(t){return '<span class="tag">'+t+'</span>';}).join('')+'</div></dd></dl></div>';
+  h+='<div class="ctx-sec"><div class="sec-title"><span class="caps">Conversas anteriores</span></div>';
+  if(c.hist.length)h+='<ul class="hist">'+c.hist.map(function(x){return '<li><time>'+x[0]+'</time><span><b>'+x[1]+'</b><small>'+x[2]+'</small></span></li>';}).join('')+'</ul>';
+  else h+='<p class="muted-note">Primeira conversa com este contato.</p>';
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+/* ---------------- toast ---------------- */
+var tt;
+function toast(msg){var t=$('toast');t.innerHTML=ic('ccheck',18,2)+'<span>'+msg+'</span>';t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2600);}
+
+/* ---------------- boot ---------------- */
+renderNav();renderTop();renderInbox();renderListShell();renderRows();renderThread();renderCtx();
+if(params.get('nav')==='open')$('app').classList.add('nav-open');
+if(params.get('state')==='approved'){var b=$('apOk');if(b)b.click();}
+})();
+</script>
+</body>
+</html>
